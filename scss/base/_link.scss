@@ -1,0 +1,10 @@
+
+a{
+	text-decoration: none;
+	color: lighten($color-secondary, 40%);
+
+	&:hover,
+	&:focus{
+		text-decoration: underline;
+	}
+}

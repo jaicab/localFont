@@ -1,0 +1,34 @@
+
+// Font
+$font-family: localFont, "Helvetica Neue", Helvetica,  Arial, sans-serif;
+$font-family-alt: Georgia, serif;
+
+
+// Colors
+
+$color-primary: #A95953;
+$color-secondary: #424675;
+$color-tertiary: #A9A653;
+
+$color-white: #fefefe;
+$color-text: #333;
+
+// Paddings
+
+$pad: 1em;
+
+
+// Breakpoints
+$mq-base-font-size: 16px;
+
+$mq-breakpoints: (
+    x-small:   240px,
+    small:     320px,
+    xx-medium: 480px,
+    x-medium:  640px,
+    medium:    760px,
+    big: 	   960px,
+    large:     1300px,
+    x-large:   1600px,
+    xx-large:  1900px
+);

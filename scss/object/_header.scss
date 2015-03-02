@@ -1,0 +1,54 @@
+.header{
+}
+
+.header__intro{
+	font-size: 1em;
+	margin: $pad 0;
+}
+
+.logo{
+	background: $color-primary;
+	color: $color-white;
+	font-size: 2em;
+	padding: $pad*.5;
+	text-align: center;
+	margin: 0 .75em .75em;
+	padding-top: .75em;
+	font-family: Georgia, Times, "Times New Roman", serif;
+	border: .05em dashed darken($color-primary, 10%);
+	border-top: none;
+	box-shadow: 0 0 0 .25em $color-primary,
+		.05em .05em .15em .25em darken($color-secondary, 10%);
+	text-shadow: .1em .1em 0 darken($color-primary, 10%);
+}
+
+@include mq($from: xx-medium) {
+	.logo{
+		//float: left;
+		width: 30%;
+		margin: 0 auto;
+		font-size: 1.7em;
+	}
+	.header__intro{
+		margin: 0;
+		font-size: 1.6em;
+		padding: $pad 0;
+		text-align: center;
+	}
+}
+
+
+@include mq($from: big) {
+	.logo{
+		float: left;
+		width: 18%;
+		font-size: 1.5em;
+		margin-right: 2em;
+		margin-left: .5em;
+	}
+	.header__intro{
+		font-size: 1.2em;
+		padding: $pad*1.25 0;
+		text-align: left;
+	}
+}

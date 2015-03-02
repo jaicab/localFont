@@ -1,0 +1,30 @@
+
+*{
+	&,
+	&:before,
+	&:after{
+		box-sizing: border-box;
+	}
+}
+
+
+@import "default";
+@import "mixin";
+
+@import "generic/mq";
+@import "generic/ext";
+@import "generic/normalize";
+
+@import "base/main";
+@import "base/link";
+@import "base/heading";
+@import "base/paragraph";
+@import "base/forms";
+
+@import "object/header";
+@import "object/footer";
+@import "object/nav";
+@import "object/layout";
+@import "object/droparea";
+@import "object/font_list";
+@import "object/output";

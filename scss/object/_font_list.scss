@@ -1,0 +1,60 @@
+
+.dontminify{
+	padding: 1em 0;
+	text-align: center;
+}
+
+.fontform.done{
+	max-height: 100em !important;
+}
+
+.font{
+	padding: $pad/2;
+	//border-top: .1em solid $color-white;
+	
+	& + &{
+		border-top: .1em dashed $color-white;
+	}
+}
+
+	.font__demo{
+		margin-bottom: .5em;
+	}
+
+
+@include mq($from: small) {
+	.font{
+		overflow: hidden;
+		position: relative;
+	}
+
+	.font__demo{
+		margin-top: .5em;
+		margin-bottom: 0;
+	}
+
+	.field{
+		width: 49%;
+		margin-right: 1%;
+		margin-top: 1%;
+		float: left;
+	}
+}
+
+
+@include mq($from: x-medium) {
+	.field{
+		width: 28%;
+	}
+	button.field{
+		width: 13%;
+		margin-right: 0;
+	}
+}
+
+@include mq($from: big) {
+		
+	.font{
+		padding: $pad/2 0 1em 0;
+	}
+}

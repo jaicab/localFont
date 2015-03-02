@@ -1,0 +1,29 @@
+
+
+html{
+	font: 1em/1.2 $font-family;
+	background: $color-secondary;
+	color: $color-white;
+}
+
+img{
+	max-width: 100%;
+	display: inline-block;
+}
+
+nav ul{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.center{
+	text-align: center;
+}
+
+@include mq($from: big) {
+
+	#clearAll{
+		float: right;
+	}
+}

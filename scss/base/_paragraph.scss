@@ -1,0 +1,11 @@
+p{
+	margin: 0 0 $pad 0;
+
+	& + &{
+		margin-bottom: $pad;
+	}
+}
+
+code{
+	line-height: 1;
+}

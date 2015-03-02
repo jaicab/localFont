@@ -1,0 +1,93 @@
+form{
+	display: block;
+	clear:both;
+}
+
+input,select,textarea{
+	display:block;
+	width:100%;
+	padding: .5em .5em;
+	font-family: $font-family;
+	font-size:1em;
+	border-radius: 0;
+	color: darken($color-text, 0%);
+	background: lighten(#f2f2f2, 0%);
+	border: 1px solid lighten($color-secondary, 20%);
+	-webkit-appearance: none;
+	vertical-align:top;
+	font-weight: 400 !important; 
+	font-style: normal;
+	line-height: 1.2;
+}
+textarea{
+	resize:vertical;
+	min-height: 120px;
+}
+input[type="file"]{
+	padding:0.4em;
+}
+input[type="date"]{
+	padding: .6em .5em;
+	height: 2.75em;
+}
+/*botones*/
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.button,
+button{
+	box-shadow: none;
+	padding: .5em 1em;
+	display: inline-block;
+	text-align: center;
+	background: $color-primary;
+	color: $color-white;
+	font-weight: 500;
+	font-family: $font-family;
+	font-style: normal;
+	line-height: 1.2;
+	border: 1px solid darken($color-primary, 10%);
+}
+/*checkbox y radio*/
+input[type="checkbox"],
+input[type="radio"]{
+	width:auto;
+	-webkit-appearance:radio;
+	display: inline-block;
+	margin: .1em .5em;
+}
+input[type="checkbox"]{
+	-webkit-appearance:checkbox;
+}
+
+/*select*/
+.select{
+	position:relative;
+	display: block;
+}
+.select select{
+}
+.select:after{
+	content: '\25bc';
+	font-style: normal;
+	font-weight: normal;
+	speak: none;
+	pointer-events:none;
+	
+	display: inline-block;
+	text-align: center;
+	font-variant: normal;
+	text-transform: none;
+	 
+	/* fix buttons height, for twitter bootstrap */
+	line-height: 2em;
+
+	position:absolute;
+	top:0;
+	bottom:0;
+	right:0;
+}
+
+
+
+

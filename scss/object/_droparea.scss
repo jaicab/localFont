@@ -1,0 +1,21 @@
+#filedrag{
+	font-family: 'Georgia';
+	font-weight: 300;
+	font-style: italic;
+	text-align: center;
+	padding: $pad*6 $pad*2;
+	margin: $pad*1.5 0;
+	color: lighten($color-tertiary, 40%);
+	//text-shadow: .1em .1em darken($color-tertiary, 10%);
+	border: .2em dashed darken($color-secondary, 0%);
+	background: lighten($color-secondary, 10%);
+	border-radius: $pad/2;
+	cursor: copy;
+	transition: 1s all;
+}
+
+body.done{
+	#filedrag{
+		padding: $pad*3;
+	}
+}

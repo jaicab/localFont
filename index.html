@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>localFont - A localStorage solution for web font loading</title>
+	<meta name="description" content="Sass @extend on steroids">
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="localFont - A quick way to implement the localStorage caching solution for web font loading in seconds">
+	<meta name="twitter:description" content="localFont creates a base64 version of your font files and creates the CSS and JavaScript necessary to implement it.">
+	<meta name="twitter:creator" content="@jaicab_">
+
+	<meta property="og:title" content="localFont - A quick way to implement the localStorage caching solution for web font loading in seconds" />
+	<meta property="og:url" content="http://jaicab.com/localFont/" />
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript" src="core.min.js"></script>
+</head>
+<body>
+	
+	<header class="header">
+		<div class="lc">
+			<div class="logo">localFont</div>
+			<h1 class="header__intro">Implement localStorage caching for web font loading in seconds</h1>
+		</div>
+	</header>
+	
+	<section class="section">
+		<div class="lc">
+		    <form id="upload" action="upload.php" method="POST" enctype="multipart/form-data">
+
+
+					<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
+
+					<div>
+						<input type="hidden" id="fileselect" name="fileselect[]" multiple="multiple" />
+						<div id="filedrag" class="droparea">Drop your font family files here (*.woff, *.woff2 or *.ttf)</div>
+					</div>
+
+
+			</form>
+
+			
+			<div class="fontform">
+				<button id="clearAll">Clear all</button>
+				<p>
+					Now please set your font family name as well as the font weights and styles corresponding to each file.
+					<br/>
+					Your CSS and demos will be updated on the fly. Please use one font family at a time.
+				</p>
+				<div class="font familyname">
+					<div>
+						Family name
+					</div>
+					<div id="font_family">
+					
+					</div>
+				</div>
+				<div id="font_list">
+					
+				</div>
+			</div>
+
+		    <div class="output-wrap">
+
+				<div class="output">				
+					<h2><b>Boom</b>. Set up your fonts on the left. Then, use this code.</h2>
+				</div>
+				<div class="dontminify">
+					<input type="checkbox" id="nominifycss">Don't minify CSS
+				</div>
+		    	<div class="output output--css">
+			        <h3>CSS</h3>
+			        <p>Put this code in a CSS file and tell me its absolute path (should be accessible via domain.com/<span id="pathspan">font.css</span>).</p>
+			        <input type="text" id="css_path" placeholder="Absolute path to CSS file" value="font.css">
+			        <textarea id="outputcss" placeholder="Base64 will appear here"></textarea>
+			    </div>
+
+			    <div class="output output--js">
+					<h3>JavaScript</h3>
+			        <p>Paste this chunk of JS between <code>script</code> tags right before your <code>body</code> closing tag.</p>
+					<textarea id="outputjs">!function(){"use strict";function e(e,t,n){e.addEventListener?e.addEventListener(t,n,!1):e.attachEvent&&e.attachEvent("on"+t,n)}function t(e){return window.localStorage&&localStorage.font_css_cache&&localStorage.font_css_cache_file===e}function n(){if(window.localStorage&&window.XMLHttpRequest)if(t(o))c(localStorage.font_css_cache);else{var n=new XMLHttpRequest;n.open("GET",o,!0),e(n,"load",function(){4===n.readyState&&(c(n.responseText),localStorage.font_css_cache=n.responseText,localStorage.font_css_cache_file=o)}),n.send()}else{var a=document.createElement("link");a.href=o,a.rel="stylesheet",a.type="text/css",document.getElementsByTagName("head")[0].appendChild(a),document.cookie="font_css_cache"}}function c(e){var t=document.createElement("style");t.innerHTML=e,document.getElementsByTagName("head")[0].appendChild(t)}var o="/font.css";window.localStorage&&localStorage.font_css_cache||document.cookie.indexOf("font_css_cache")>-1?n():e(window,"load",n)}();</textarea>
+				</div>
+
+		    </div>
+	    </div>
+
+	</section>
+
+	<footer class="footer">
+		<div class="lc">
+			<div class="content">
+				Made with &hearts; by <a rel="author" href="http://jaicab.com">Jaime Caballero</a> and <a href="https://github.com/jaicab/localFont/graphs/contributors">awesome contributors</a>.
+			</div>
+		</div>
+	</footer>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+
+
+.footer{
+	text-align: center;
+	margin-top: $pad;
+
+	.content{
+		padding: $pad*2 $pad;
+	}
+}
+
+@include mq($from: big) {
+	.footer{
+		background: none;
+	}
+}
+
+@include mq($from: large) {
+	.footer{
+		padding-bottom: 1em;
+	}
+}

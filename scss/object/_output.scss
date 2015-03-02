@@ -1,0 +1,73 @@
+
+.hidden{
+	max-height: 0;
+	overflow: hidden;
+	transition: 1s all;
+}
+
+.hidden.done{
+	max-height: 20em;
+}
+
+.output-wrap p{
+	margin-top: .25em;
+	margin-bottom: .5em;
+}
+
+@include mq($from: medium) {
+	.output__css,
+	.output__js{
+		float: left;
+		width: 50%;
+	}
+	.output{
+		padding: 0 .5em;
+	}
+
+	.output--css{
+		padding-left: 0;
+	}
+	.output--js{
+		padding-right: 0;
+	}
+}
+
+@include mq($from: big) {
+	body{
+		transition: all 1s;
+
+		.lc{
+			//max-width: none;
+		}
+	}
+	body.done{
+		padding-right: 30%;
+	}
+	.output-wrap{
+		position: fixed;
+		overflow: auto;
+		top: 0; right: 0; bottom: 0;
+		transform: translate3d(100%, 0, 0);
+		background: $color-primary;
+		width: 30%;
+		max-height: none !important;
+		padding-top: 1em;
+
+		textarea{
+			height: 15vh;
+			height: calc(50vh - 14.5em);
+		}
+	}
+	.output-wrap.done{
+		transform: translate3d(0,0,0);
+	}
+
+	.output--css,
+	.output--js{
+		float: none;
+		width: auto;
+	}
+	.output{
+		padding: 1em 2em !important;
+	}
+}

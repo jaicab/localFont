@@ -1,0 +1,340 @@
+@charset "UTF-8";
+
+////
+/// -------------------------------------------------------------------------------------
+///
+///                            ext(); v1.0 - @extend on a budget
+///
+///                                     jaicab.com/ext/
+///
+/// -------------------------------------------------------------------------------------
+///
+/// List all you extend budgets on the $ext-budget.
+/// It is recommended to have, at least, a default budget call "total".
+/// The total budget would always cover all the placeholders across the system.
+///
+/// You can start using this library like so:
+///
+///   @include ext(my_placeholder);
+///
+/// Then all the placeholders will be counted and you will be warned if any of them surpass the budget.
+///
+/// If you want to create targeted budgets, add another budget to the $ext-budget map.
+/// Then use it like so:
+///
+///   @include ext(my_placeholder, targeted);
+///
+///
+/// 2015 - Made with ♥ by Jaime Caballero (@jaicab_)
+////
+
+
+/// Placeholder budget.
+/// Should be put with your other variables, before the mixins.
+///
+/// In 'total', set the maximun number of times you want a placeholder to be used.
+/// If you want to add custom budgets, add another one right after total.
+/// Total is a keyword, so it will always count all the placeholders, no matter the target.
+///
+/// @type Map
+$ext-budget: (
+  'total': 15,
+  'heading': 12
+) !default;
+
+
+/// Options
+/// Should be put with your other variables, before the mixins.
+///
+/// @prop {Bool} strict [false] - For strict development. Overrides the optional warnings and throws and error on all bad scenarios.
+/// @prop {Bool} warn-over [true] - Warns you when a placeholder has been used more than budgeted.
+/// @prop {Bool} warn-duplicates [true] - Warn when you use a placeholder in the same selector more than once.
+/// @prop {Bool} over-only [true] - For placeholders on debug. Only show placeholders over the budget.
+/// @prop {Bool} show-all [true] - For budgets debug. List an expanded version of all the used budgets, no matter of the results.
+///
+/// @type Map
+$ext-options: (
+  'strict': false,
+  'warn-over': true,
+  'warn-duplicates': true,
+  'over-only': true,
+  'show-all': true
+) !default;
+
+
+/// Initiates the variables necessary for ext() to work
+@mixin ext-init {
+  // OPTIONS
+  @if not variable-exists('ext-opt') {
+    // Default options
+    $ext-opt: (
+      'strict': false,
+      'warn-over': true,
+      'warn-duplicates': true,
+      'over-only': true,
+      'show-all': true
+    ) !global;
+
+    // If the developer has set new options($ext-options), merge them with the defaults.
+    @if type-of($ext-options) == 'map' {
+      $ext-opt: map-merge($ext-opt, $ext-options) !global;
+    } @else {
+      @error 'Seems like `$ext-options` is not a map.';
+    }
+  }
+
+  // FOR EXT()
+  // If there is no $ext-budget variable
+  @if not variable-exists('ext-budget') {
+    @error 'You must set you placeholder budgets before using ext().';
+  }
+
+  // Or no budgets specified
+  @else if not length($ext-budget) {
+    @error 'You must specify at least one budget. Use `total` by default.';
+  }
+
+  // If the placeholder collection hasn't still been created.
+  @else if not variable-exists('ext-map') {
+    // Create map
+    $ext-map: () !global;
+
+    @each $key, $budget in $ext-budget {
+      $ext-map: map-merge($ext-map, ($key: ())) !global;
+    }
+  }
+
+}
+
+
+/// Gets an option from the options map
+///
+/// @param {String} $option - Name of the option
+///
+/// @example scss
+///   ext-get-option(warn-duplicated);
+///   // -> true
+///
+/// @returns {List} List of selectors without duplications
+@function ext-get-option($option) {
+  $ret: ();
+
+  @if not map-has-key($ext-opt, $option) {
+    @error 'The option `#{$option}` is not defined or part of the options.';
+  } @else {
+    $ret: map-get($ext-opt, $option);
+  }
+
+  @return $ret;
+}
+
+
+/// Removes duplicates from a Sass list and joins them with commas
+///
+/// @param {List} $selectors - List of selectors
+/// @param {String} $placeholder - Used placeholder. Displayed on @warn.
+///
+/// @example scss
+///   $list: html, .foo, body, .foo, form;
+///   $list: ext-remove-duplicates($list);
+///   // -> html, .foo, body, form
+///
+/// @returns {List} List of selectors without duplications
+@function ext-remove-duplicates($selectors, $placeholder) {
+  $ret: ();
+
+  @each $selector in $selectors {
+    @if not index($ret, $selector) {
+      $ret: append($ret, $selector, 'comma');
+    } @else {
+      // Warn if duplicated selector
+      $ext-message: 'The selector `#{$selector}` has already been extended for the `%#{$placeholder}` placeholder.';
+      @if ext-get-option('strict') {
+        @error $ext-message;
+      } @else if ext-get-option('warn-duplicates') {
+        @warn $ext-message;
+      }
+    }
+  }
+
+  @return $ret;
+}
+
+
+/// Lists a map of placeholders and selectors formatted for pseudoelements
+///
+/// @param {List} $map - Map formed by a key and a map of (placeholder, selector list)
+/// @param {String} $key ['total'] - Key to budget and target a specific range of placeholders.
+///
+/// @example scss
+///   $map: (
+///     total: (
+///        %foo: html, div,
+///        ...
+///     )
+///   )
+///   $list: ext-list-map($list);
+///
+/// @returns {String} Returns the info in a visual way as seen on ext-debug();
+@function ext-list-map($map, $key: 'total') {
+  $ret: '';
+
+  // If it's been extended
+  @if length($map) > 0 {
+
+    // List the key
+    $over-budget: 0;
+    $count-selectors: 0;
+    $ret-loop: '';
+
+    // Loop through the placeholders
+    @each $placeholder, $selectors in $map {
+      // Count selectors
+      $count-selectors: length($selectors);
+
+      // List the placeholder and show use respect budget
+      @if length($selectors) > map-get($ext-budget, $key) or not ext-get-option('over-only') {
+        $ret-loop: '#{$ret-loop}#{length($selectors)}/#{map-get($ext-budget, $key)} - %#{$placeholder}';
+      }
+
+      // If current placeholder is under the budget
+      @if length($selectors) <= map-get($ext-budget, $key) {
+        // And we want to see it
+        @if not ext-get-option(over-only){
+          // Format for the ones under budget
+          $ret-loop: '#{$ret-loop}: `#{$selectors}`,\A';
+        }
+      } @else {
+        // Always show the ones over the budget
+        // Format for over budget
+        $ret-loop: '#{$ret-loop} => .#{$placeholder} for: `#{$selectors}`,\A';
+        $over-budget: $over-budget + 1;
+      }
+    }
+
+    $ext-ratio: (map-get($ext-budget, $key) * length($map));
+    $prefix: if($over-budget < 1 and ext-get-option('show-all'), 'All good!', '\26A0  HEY!');
+    $ret: '#{$prefix} - #{$over-budget} of #{length($map)} #{$key} (#{map-get($ext-budget, $key)}, #{$count-selectors}/#{$ext-ratio} ratio)';
+    $ret: '#{$ret} \A #{$ret-loop} \A';
+  }
+
+  @return $ret;
+}
+
+
+/// Custom `@extend` mixin
+///
+/// @param {String} $placeholder - Placeholder selector to extend (no `%`)
+/// @param {String} $key ['total'] - Key to budget related with the placeholder.
+/// @param {String} $flag [''] - Room for the !optional flag.
+///
+/// @example scss
+///   %foo{ color: black; }
+///   .something{
+///      @include ext(foo);
+///   }
+///   // No output, but the selectors will be stored in $ext-map.
+@mixin ext($placeholder, $key: 'total', $flag: '') {
+  // If there is a parent, it's extendable
+  @if not & {
+    @error 'You can\'t extend outside a selector.';
+  } @else {
+
+    // Extend would return an error if the placeholder doesn't exist
+    @extend %#{$placeholder} #{$flag};
+
+    // Check that the budget is there and handle in a variable
+    @if not variable-exists('ext-map'){
+      @include ext-init();
+    }
+
+    @if map-has-key($ext-map, $key) {
+      $ext-map-key: map-get($ext-map, $key) !global;
+    } @else{
+      @warn 'The budget `#{$key}` hasn\'t been specified. Please add it to your $ext-budget list.';
+    }
+
+    // If we don't, initialize placeholder to the current selectors
+    $placeholder-selectors: &; // Yes, this actually works since Sass 3.4
+
+    // If we have the budget, add one
+    @if map-has-key($ext-map-key, $placeholder) {
+      // Get the current selectors, join them with the new ones and remove the duplicates
+      $placeholder-selectors: join(map-get($ext-map-key, $placeholder), &, 'comma');
+    }
+
+    // WARN IF DUPLICATED SELECTORS
+    $placeholder-selectors: ext-remove-duplicates($placeholder-selectors, $placeholder);
+
+    // Update the key -> placeholder map
+    $ext-map-key: map-merge($ext-map-key, ($placeholder: $placeholder-selectors)) !global;
+    $ext-map: map-merge($ext-map, ($key: $ext-map-key)) !global;
+
+    // Update the total one
+    @if $key != 'total' and map-has-key($ext-map, 'total') {
+      $ext-map-key: map-merge($ext-map-key, ('total': $placeholder-selectors)) !global;
+      $ext-map: map-merge($ext-map, ('total': map-merge(map-get($ext-map, 'total'), ($placeholder: $placeholder-selectors)))) !global;
+    }
+
+    // Check if it's been overused
+    // If there are more placeholder than estimated, warn the user
+    @if length($ext-map-key) > 0 and length(map-get($ext-map-key, $placeholder)) > map-get($ext-budget, $key) {
+      $ext-message: '`%#{$placeholder}` has been used #{(length(map-get($ext-map-key, $placeholder)) - map-get($ext-budget, $key))} times more than estimated (#{map-get($ext-budget, $key)}). Check `#{&}` to prevent that.';
+      @if ext-get-option('strict') {
+        @error $ext-message;
+      } @else if ext-get-option('warn-over') {
+        @warn $ext-message;
+      }
+    }
+  }
+}
+
+/// Debug the results collected by ext() till being called.
+/// IMPORTANT: Should be used at the end of your Sass file in order to cover all your calls to ext().
+///
+/// @param {String} $key-filter ['all'] - If specified, limits debug to a single budget. If not, shows all.
+///
+/// @example scss
+///   @include ext-debug();
+///   // -> fixed debug info in body:after
+@mixin ext-debug($key-filter: 'all') {
+  body::after {
+    background: #635c92;
+    background: rgba(#635c92, 0.9);
+    color: #f2f2f2;
+    font-size: small-caption;
+    padding: 2em 2em 1em 2em;
+    text-shadow: 1px 1px 0 saturate(#069, 20%);
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: .9em;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    display: block;
+
+    // Loop through the keys
+    $result: '# ext() v1.0       jaicab.com/ext/\A\A';
+
+    // If there's a key filter
+    @if $key-filter != 'all' {
+      @if not map-has-key($ext-map, $key-filter) {
+        @error 'Seems like the key `#{$key-filter}` is not on the budget or hasn\'t been used with ext().';
+      } @else {
+        $result: ext-list-map($map, $key);
+      }
+    } @else {
+      // Show all of them
+      @each $key, $map in $ext-map {
+        $result: $result + ext-list-map($map, $key);
+      }
+    }
+
+    @if $result == '# ext() v1.0       jaicab.com/ext/\A\A'{
+      $result: '#{$result} Nothing to see here. Play with show-all and over-only options to see everything.\A\A ';
+    }
+
+    content: $result;
+    white-space: pre-wrap;
+  }
+}
