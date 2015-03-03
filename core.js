@@ -217,7 +217,7 @@
                 document.getElementById('csssize').innerHTML = '';
                 font_name = undefined;
 
-                css_path = '/font.css';
+                css_path.innerHTML = '/font.css';
                 updatePath();
                 
             }, 900); // let the effect finish before actually remove the data
