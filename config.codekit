@@ -10,7 +10,7 @@
 		"outputAbbreviatedPath": "\/core.min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 1,
-		"outputStyle": 0,
+		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
 	"\/core.min.js": {
@@ -33,27 +33,17 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/localFont.js": {
-		"fileType": 64,
+	"\/README.md": {
+		"enableFootnoteSupport": 0,
+		"enableSmartyPants": 1,
+		"expandTabs": 1,
+		"fileType": 4096,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/localFont.js",
-		"outputAbbreviatedPath": "\/localFont.min.js",
+		"inputAbbreviatedPath": "\/README.md",
+		"outputAbbreviatedPath": "\/README.html",
 		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 1,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
-	"\/localFont.min.js": {
-		"fileType": 64,
-		"ignore": 1,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/localFont.min.js",
-		"outputAbbreviatedPath": "\/min\/localFont.min-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
+		"outputPathIsSetByUser": 0
 		},
 	"\/scss\/_default.scss": {
 		"createSourceMap": 0,
@@ -355,7 +345,7 @@
 	},
 "hooks": [
 	],
-"lastSavedByUser": "Jaime Caballero",
+"lastSavedByUser": "Jaime",
 "manualImportLinks": {
 	},
 "projectAttributes": {
