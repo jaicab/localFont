@@ -74,6 +74,8 @@
                     return 'font/truetype';
                 case 'woff':
                     return 'application/font-woff';
+                case 'woff2':
+                    return 'application/font-woff2';
                 case 'svg':
                     return 'image/svg+xml';
                 default:
@@ -87,6 +89,8 @@
                     return 'truetype';
                 case 'woff':
                     return 'woff';
+                case 'woff2':
+                    return 'woff2';
                 case 'svg':
                     return 'svg';
                 case 'eot':
