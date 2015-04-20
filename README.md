@@ -9,8 +9,8 @@ Please feel free to [open an issue](https://github.com/jaicab/localFont/issues/n
 
 ## Credits
 This tool wouldn't have been possible without the help of:
-- Vitaly Friedman for [his launcher script](https://gist.github.com/hdragomir/8f00ce2581795fd7b1b7)
-- Jon Leighton for his [amazing base64 function](https://gist.github.com/jonleighton/958841)
+- Vitaly Friedman for [Smashing Magazine's launcher script](https://gist.github.com/hdragomir/8f00ce2581795fd7b1b7)
+- Jon Leighton for his [amazing base64 encoding function](https://gist.github.com/jonleighton/958841)
 
 ## License
 localFont is released under the MIT license
