@@ -71,7 +71,7 @@
         getMime = function(ext) {
             switch(ext) {
                 case 'ttf':
-                    return 'font/truetype';
+                    return 'application/x-font-ttf';
                 case 'woff':
                     return 'application/font-woff';
                 case 'woff2':
