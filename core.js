@@ -55,7 +55,7 @@
 
         fileNameIsGood = function(filename) {
             // not in supported array
-            if (supported.indexOf(filename.split('.').pop()) === -1) {
+            if (supported.indexOf(filename.split('.').pop().toLowerCase()) === -1) {
                 return false;
             }
             // check if already in list
@@ -362,19 +362,22 @@
 
             current_font.file = file;
             current_font.filename = file.name;
-            current_font.extension = file.name.split('.').pop();
+            current_font.extension = file.name.split('.').pop().toLowerCase();
             current_font.mime = getMime(current_font.extension);
             current_font.format = getFormat(current_font.extension);
             current_font.style = "normal";
+
+            // Font style recognition
             if (/(italic)/i.test(file.name)) current_font.style = "italic";
 
+            // Font weight recognition
             current_font.weight = 500;
             if (/(light)/i.test(file.name)) current_font.weight = 300;
             if (/(book)/i.test(file.name)) current_font.weight = 400;
-            if (/(demi)/i.test(file.name)) current_font.weight = 600;
+            if (/(demi)/i.test(file.name) || /(semi)/i.test(file.name)) current_font.weight = 600;
             if (/(bold)/i.test(file.name)) current_font.weight = 700;
             if (/(heavy)/i.test(file.name)) current_font.weight = 800;
-            if (/(extrabold)/i.test(file.name)) current_font.weight = 800;
+            if (/(extrabold)/i.test(file.name) || /(black)/i.test(file.name)) current_font.weight = 900;
 
             font_list.push(current_font);
 
