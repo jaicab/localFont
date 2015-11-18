@@ -1,4 +1,6 @@
 (function() {
+    "use strict";
+
     var reader = {},
         supported = ['woff', 'woff2', 'ttf'],
         css_path,
@@ -137,8 +139,8 @@
 
         buildCss = function() {
             var testStyle = '',
-                tabChar = "\t",
-                brChar = "\n";
+                tabChar = TAB,
+                brChar = BR;
 
             font_css = ''; // reset CSS
 
