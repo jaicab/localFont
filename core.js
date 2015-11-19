@@ -112,14 +112,27 @@
         guessWeight = function(name) {
             var ret = 500;
 
-            if (/(light)/i.test(name)){ ret = 300; }
-            if (/(book)/i.test(name)){ ret = 400; }
-            if (/(demi)/i.test(name)){ ret = 600; }
-            if (/(bold)/i.test(name)){ ret = 700; }
-            if (/(heavy)/i.test(name)){ ret = 800; }
-            if (/(extrabold)/i.test(name)){ ret = 800; }
+            if(/(light)|(thin)/i.test(name)){ ret = 300; }
+            if(/(book)/i.test(name)){ ret = 400; }
+            if(/(demi)|(semi)/i.test(name)){ ret = 600; }
+            if(/(bold)/i.test(name)){ ret = 700; }
+            if(/(heavy)|(extrabold)/i.test(name)){ ret = 800; }
 
             return ret;
+        },
+
+        sortFonts = function(a, b) {
+            // Sort by weight first
+            if(a.weight-b.weight) {
+                return a.weight-b.weight;
+            } else {
+                // If it's the same weight, sort by style
+                if(a.style > b.style){
+                    return -1;
+                } else if(a.style < b.style){
+                    return 1;
+                }
+            }
         },
 
         base64Encode = function(str) {
@@ -247,18 +260,8 @@
                 compare_list = font_list.splice();
             }
 
-            font_list.sort(function(a, b) {
-                // Sort by weight and then style
-                if(a.weight-b.weight) {
-                    return a.weight-b.weight;
-                } else{
-                    if(a.style > b.style){
-                        return -1;
-                    } else if(a.style < b.style){
-                        return 1;
-                    }
-                }
-            });
+            // Sort by weight and then style
+            font_list.sort(sortFonts);
 
             // If the order of the elements has changed, then rebuild UI
             if (!compare_list.length || compare_list !== font_list) {
@@ -271,13 +274,16 @@
             list_container.innerHTML = '';
 
             font_list.forEach(function(font, index) {
+                // Font container
                 var row = document.createElement('div');
                 row.classList.add('font');
 
+                // Name and demo
                 var name = document.createElement('div');
                 name.classList.add('font__demo');
                 name.innerHTML = "Demo: " + font.filename + " - Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
+                // MIME field
                 var mime = document.createElement('input');
                 mime.classList.add('field');
                 mime.value = font.mime;
@@ -286,6 +292,7 @@
                 }, false);
                 mime.addEventListener('keydown', typingReset, false);
 
+                // Style field
                 var style = document.createElement('input');
                 style.classList.add('field');
                 style.placeholder = "normal";
@@ -295,6 +302,7 @@
                 }, false);
                 style.addEventListener('keydown', typingReset, false);
 
+                // Weight field
                 var weight = document.createElement('input');
                 weight.classList.add('field');
                 weight.type = "number";
@@ -311,19 +319,23 @@
                 butDelete.classList.add('field');
                 butDelete.innerHTML = 'Remove';
                 butDelete.addEventListener("click", function() {
-                    this.parentNode.parentNode.removeChild(this.parentNode); // remove from HTML
+
+                    // Remove itself from the DOM
+                    this.parentNode.parentNode.removeChild(this.parentNode);
                     if (font_list.indexOf(font) > -1) {
                         font_list.splice(font_list.indexOf(font), 1); // remove from array
                     }
+
+                    // Refresh everything
                     updateFonts();
 
+                    // Maybe we're all done here?
                     if (font_list.length === 0) {
-                        //remove if no fonts??
                         clearAll();
                     }
                 });
 
-                // Demo class
+                // Add demo class - .normal0500woff {}
                 row.classList.add(font.style + index + font.weight + font.extension);
 
                 row.appendChild(name);
@@ -332,8 +344,10 @@
                 row.appendChild(style);
                 row.appendChild(butDelete);
 
+                // You never know
                 font.data = row;
 
+                // Boom
                 list_container.appendChild(font.data);
             });
             return;
@@ -390,15 +404,12 @@
                 'filename': file.name,
                 'extension': file.name.split('.').pop(),
                 'style': /(italic)/i.test(file.name) ? "italic" : "normal",
-                'weight': 500
+                'weight': guessWeight(current_font.filename)
             }; 
 
             // Other stuff
             current_font.mime = getMime(current_font.extension);
             current_font.format = getFormat(current_font.extension);
-           
-            // Guess a font weight
-            current_font.weight = guessWeight(current_font.filename);
             
             // Add to the official list
             font_list.push(current_font);
