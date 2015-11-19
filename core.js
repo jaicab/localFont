@@ -404,7 +404,7 @@
                 'filename': file.name,
                 'extension': file.name.split('.').pop(),
                 'style': /(italic)/i.test(file.name) ? "italic" : "normal",
-                'weight': guessWeight(current_font.filename)
+                'weight': guessWeight(file.name)
             }; 
 
             // Other stuff
