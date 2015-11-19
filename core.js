@@ -24,16 +24,16 @@
             if ((bytes >= 0) && (bytes < kilobyte)) {
                 return bytes + ' B';
 
-            } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+            } else if((bytes >= kilobyte) && (bytes < megabyte)) {
                 return (bytes / kilobyte).toFixed(precision) + ' KB';
 
-            } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+            } else if((bytes >= megabyte) && (bytes < gigabyte)) {
                 return (bytes / megabyte).toFixed(precision) + ' MB';
 
-            } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+            } else if((bytes >= gigabyte) && (bytes < terabyte)) {
                 return (bytes / gigabyte).toFixed(precision) + ' GB';
 
-            } else if (bytes >= terabyte) {
+            } else if(bytes >= terabyte) {
                 return (bytes / terabyte).toFixed(precision) + ' TB';
 
             } else {
@@ -49,7 +49,7 @@
             style.innerHTML = text;
         },
 
-        FileDragHover = function(e) {
+        fileDragHover = function(e) {
             e.stopPropagation();
             e.preventDefault();
             e.target.className = (e.type === "dragover" ? "hover" : "");
@@ -57,11 +57,11 @@
 
         fileNameIsGood = function(filename) {
             // not in supported array
-            if (supported.indexOf(filename.split('.').pop().toLowerCase()) === -1) {
+            if(supported.indexOf(filename.split('.').pop().toLowerCase()) === -1) {
                 return false;
             }
             // check if already in list
-            if (font_list.some(function(font) {
+            if(font_list.some(function(font) {
                 return font.filename === filename;
             })) {
                 return false;
@@ -102,11 +102,24 @@
             }
         },
 
-        fontFamilyName = function(filename) {
+        guessFamilyName = function(filename) {
             var name = filename.replace(/\..+$/, ''); // remove extension
             name = name.replace(/(bold)/i, ''); // remove "bold"
             name = name.replace(/-/g, ''); // remove hyphens
             return name;
+        },
+
+        guessWeight = function(name) {
+            var ret = 500;
+
+            if (/(light)/i.test(name)){ ret = 300; }
+            if (/(book)/i.test(name)){ ret = 400; }
+            if (/(demi)/i.test(name)){ ret = 600; }
+            if (/(bold)/i.test(name)){ ret = 700; }
+            if (/(heavy)/i.test(name)){ ret = 800; }
+            if (/(extrabold)/i.test(name)){ ret = 800; }
+
+            return ret;
         },
 
         base64Encode = function(str) {
@@ -182,7 +195,7 @@
 
         doneTyping = function(index, el, val) {
 
-            if(el === "familyname") buildCss();
+            if(el === "familyname") { buildCss(); }
 
             // If the value has changed, update it
             else if(font_list[index][el] !== val.value) {
@@ -228,20 +241,26 @@
         },
 
         updateFonts = function() {
-            // Sorting
+            // Create copy of font list
             var compare_list = [];
             if (font_list.constructor === Array) {
                 compare_list = font_list.splice();
             }
 
             font_list.sort(function(a, b) {
-                if (a.weight-b.weight) {
-                    return a.weight-b.weight
+                // Sort by weight and then style
+                if(a.weight-b.weight) {
+                    return a.weight-b.weight;
                 } else{
-                 if (a.style > b.style) return -1;
-                 else if (a.style < b.style) return 1;
+                    if(a.style > b.style){
+                        return -1;
+                    } else if(a.style < b.style){
+                        return 1;
+                    }
                 }
-            })
+            });
+
+            // If the order of the elements has changed, then rebuild UI
             if (!compare_list.length || compare_list !== font_list) {
                 buildFontsForm();
                 buildCss();
@@ -323,10 +342,11 @@
         buildForm = function() {
 
             // Build font family bit
-            if (font_name === undefined) {
+            if (!font_name) {
+                // Create stuff for family name
                 font_name = document.createElement('input');
                 font_name.placeholder = "Set to localFont for extra fun.";
-                font_name.value = fontFamilyName(font_list[0].filename) || "Family name"; // default font family name to first file name uploaded
+                font_name.value = guessFamilyName(font_list[0].filename) || "Family name"; // default font family name to first file name uploaded
                 font_name.addEventListener('keyup', function() {
                     typing(0, "familyname", this);
                 }, false);
@@ -334,53 +354,53 @@
                 document.getElementById('font_family').appendChild(font_name);
             }
 
+            // Now let's get to the fonts
             updateFonts();
 
             return;
         },
         readFile = function(index) {
-            if (index === font_list.length) {
-                // done reading
-                buildForm();
-            }
-            else if( index > font_list.length ) return; // all done
-            else {
-                var file = font_list[index].file;
+            if( index < font_list.length ) {
+
                 reader.onload = function(e) {
                     // get file content
                     var binaryString = e.target.result;
                     font_list[index].base64 = base64Encode(binaryString);
 
-                    // do sth with bin
-
+                    // Go on
                     readFile(index+1);
-                }
+                };
+
                 reader.readAsBinaryString(font_list[index].file);
+            }
+            else if (index === font_list.length) {
+                // Done reading, let's build the UI
+                buildForm();
+                return;
+            } else {
+                // This shouldn't happen
+                return;
             }
         },
         newFont = function(file) {
 
-            var current_font = {}; // new font
+            // new font
+            var current_font = {
+                'file': file,
+                'filename': file.name,
+                'extension': file.name.split('.').pop(),
+                'style': /(italic)/i.test(file.name) ? "italic" : "normal",
+                'weight': 500
+            }; 
 
-            current_font.file = file;
-            current_font.filename = file.name;
-            current_font.extension = file.name.split('.').pop().toLowerCase();
+            // Other stuff
             current_font.mime = getMime(current_font.extension);
             current_font.format = getFormat(current_font.extension);
-            current_font.style = "normal";
-
-            // Font style recognition
-            if (/(italic)/i.test(file.name)) current_font.style = "italic";
-
-            // Font weight recognition
-            current_font.weight = 500;
-            if (/(light)/i.test(file.name)) current_font.weight = 300;
-            if (/(book)/i.test(file.name)) current_font.weight = 400;
-            if (/(demi)/i.test(file.name) || /(semi)/i.test(file.name)) current_font.weight = 600;
-            if (/(bold)/i.test(file.name)) current_font.weight = 700;
-            if (/(heavy)/i.test(file.name)) current_font.weight = 800;
-            if (/(extrabold)/i.test(file.name) || /(black)/i.test(file.name)) current_font.weight = 900;
-
+           
+            // Guess a font weight
+            current_font.weight = guessWeight(current_font.filename);
+            
+            // Add to the official list
             font_list.push(current_font);
 
             return;
@@ -389,7 +409,7 @@
             var indexReader = font_list.length || 0;
             var launchReader = false;
             list_container = document.getElementById("font_list");
-            FileDragHover(evt);
+            fileDragHover(evt);
 
             files = evt.dataTransfer.files;
 
@@ -399,11 +419,14 @@
 
                 for (var i = 0; i < files.length; i++) {
                     if (fileNameIsGood(files[i].name)) {
+                        // Good font, create it
                         newFont(files[i]);
                         launchReader = true;
                     }
                 }
-                if (launchReader) readFile(indexReader); // launch file reader
+                if (launchReader){
+                    readFile(indexReader); // launch file reader
+                }
             }
         },
         updatePath = function() {
@@ -427,8 +450,8 @@
             document.getElementsByTagName('head')[0].appendChild(style);
 
             // Drop file area activated
-            document.getElementById('filedrag').addEventListener("dragover", FileDragHover, false);
-            document.getElementById('filedrag').addEventListener("dragleave", FileDragHover, false);
+            document.getElementById('filedrag').addEventListener("dragover", fileDragHover, false);
+            document.getElementById('filedrag').addEventListener("dragleave", fileDragHover, false);
             document.getElementById('fileselect').addEventListener('change', handleFileSelect, false);
             document.getElementById('filedrag').addEventListener("drop", handleFileSelect, false);
 
@@ -447,7 +470,7 @@
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             init();
         } else {
-            alert('The File APIs are not fully supported in this browser.');
+            window.alert('The File APIs are not fully supported in this browser.');
         }
     });
 })();
