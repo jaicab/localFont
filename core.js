@@ -1,4 +1,6 @@
 (function() {
+    "use strict";
+
     var reader = {},
         supported = ['woff', 'woff2', 'ttf'],
         css_path,
@@ -55,7 +57,7 @@
 
         fileNameIsGood = function(filename) {
             // not in supported array
-            if (supported.indexOf(filename.split('.').pop()) === -1) {
+            if (supported.indexOf(filename.split('.').pop().toLowerCase()) === -1) {
                 return false;
             }
             // check if already in list
@@ -71,7 +73,7 @@
         getMime = function(ext) {
             switch(ext) {
                 case 'ttf':
-                    return 'font/truetype';
+                    return 'application/x-font-ttf';
                 case 'woff':
                     return 'application/font-woff';
                 case 'woff2':
@@ -137,8 +139,8 @@
 
         buildCss = function() {
             var testStyle = '',
-                tabChar = "\t",
-                brChar = "\n";
+                tabChar = TAB,
+                brChar = BR;
 
             font_css = ''; // reset CSS
 
@@ -362,19 +364,22 @@
 
             current_font.file = file;
             current_font.filename = file.name;
-            current_font.extension = file.name.split('.').pop();
+            current_font.extension = file.name.split('.').pop().toLowerCase();
             current_font.mime = getMime(current_font.extension);
             current_font.format = getFormat(current_font.extension);
             current_font.style = "normal";
+
+            // Font style recognition
             if (/(italic)/i.test(file.name)) current_font.style = "italic";
 
+            // Font weight recognition
             current_font.weight = 500;
             if (/(light)/i.test(file.name)) current_font.weight = 300;
             if (/(book)/i.test(file.name)) current_font.weight = 400;
-            if (/(demi)/i.test(file.name)) current_font.weight = 600;
+            if (/(demi)/i.test(file.name) || /(semi)/i.test(file.name)) current_font.weight = 600;
             if (/(bold)/i.test(file.name)) current_font.weight = 700;
             if (/(heavy)/i.test(file.name)) current_font.weight = 800;
-            if (/(extrabold)/i.test(file.name)) current_font.weight = 800;
+            if (/(extrabold)/i.test(file.name) || /(black)/i.test(file.name)) current_font.weight = 900;
 
             font_list.push(current_font);
 
@@ -408,9 +413,12 @@
             if (!(/\.(css)$/i).test(css_path.value)) {
                 document.getElementById('outputjs').value = 'I need a *.css file in order to work!';
             } else {
-                document.getElementById('outputjs').value = '!function(){"use strict";function e(e,t,n){e.addEventListener?e.addEventListener(t,n,!1):e.attachEvent&&e.attachEvent("on"+t,n)}function t(e){return window.localStorage&&localStorage.font_css_cache&&localStorage.font_css_cache_file===e}function n(){if(window.localStorage&&window.XMLHttpRequest)if(t(o))c(localStorage.font_css_cache);else{var n=new XMLHttpRequest;n.open("GET",o,!0),e(n,"load",function(){4===n.readyState&&(c(n.responseText),localStorage.font_css_cache=n.responseText,localStorage.font_css_cache_file=o)}),n.send()}else{var a=document.createElement("link");a.href=o,a.rel="stylesheet",a.type="text/css",document.getElementsByTagName("head")[0].appendChild(a),document.cookie="font_css_cache"}}function c(e){var t=document.createElement("style");t.innerHTML=e,document.getElementsByTagName("head")[0].appendChild(t)}var o="' +
+                // Unminified version available on launcher.html
+                document.getElementById('outputjs').value = '\<script type="text\/javascript"\>!function(){"use strict";function e(e,t,n){e.addEventListener?e.addEventListener(t,n,!1):e.attachEvent&&e.attachEvent("on"+t,n)}function t(e){return window.localStorage&&localStorage.font_css_cache&&localStorage.font_css_cache_file===e}function n(){if(window.localStorage&&window.XMLHttpRequest)if(t(o))c(localStorage.font_css_cache);else{var n=new XMLHttpRequest;n.open("GET",o,!0),e(n,"load",function(){4===n.readyState&&(c(n.responseText),localStorage.font_css_cache=n.responseText,localStorage.font_css_cache_file=o)}),n.send()}else{var a=document.createElement("link");a.href=o,a.rel="stylesheet",a.type="text/css",document.getElementsByTagName("head")[0].appendChild(a),document.cookie="font_css_cache"}}function c(e){var t=document.createElement("style");t.innerHTML=e,document.getElementsByTagName("head")[0].appendChild(t)}var o="' +
                     "/" + css_path.value +
-                    '";window.localStorage&&localStorage.font_css_cache||document.cookie.indexOf("font_css_cache")>-1?n():e(window,"load",n)}();';
+                    '";window.localStorage&&localStorage.font_css_cache||document.cookie.indexOf("font_css_cache")>-1?n():e(window,"load",n)}();\<\/script\>\<noscript\>\<link rel="stylesheet" href="' +
+                    "/" + css_path.value +
+                    '"\>\<\/noscript\>';
             }
             return;
         },
